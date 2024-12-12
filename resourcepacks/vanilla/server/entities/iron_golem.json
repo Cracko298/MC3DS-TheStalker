@@ -1,0 +1,249 @@
+{
+  "minecraft:entity": {
+    "format_version": "1.1.0",
+
+    "component_groups": {
+      "minecraft:golem_leashed": {
+        "minecraft:behavior.move_towards_restriction": {
+          "priority": 2,
+          "speed_multiplier": 1.0
+        }
+      },
+      "minecraft:player_created": {
+        "minecraft:behavior.hurt_by_target": {
+          "priority": 2,
+          "entity_types": {
+            "filters": {
+              "other_without_families": [
+                "creeper"
+              ]
+            }
+          }
+        }
+      },
+      "flee_after_attack": {
+        "minecraft:behavior.avoid_mob_type": {
+        "priority": 3,
+        "entity_types": [
+          {
+            "filters": { "other_with_families": "player" },
+            "max_dist": 20,
+            "walk_speed_multiplier": 1.5,
+            "sprint_speed_multiplier": 1.5
+          }
+        ]
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 3,
+        "entity_types": [
+          {
+            "filters": {
+              "other_with_families": "monster",
+              "other_without_families": "player"
+            },
+            "within_default": 0
+          }
+        ],
+        "must_see": false,
+        "must_reach": true
+      }
+      },
+      "minecraft:village_created": {
+        "minecraft:behavior.defend_village_target": {
+          "priority": 1
+        },
+        "minecraft:behavior.hurt_by_target": {
+          "priority": 2,
+          "entity_types": {
+            "filters": {
+              "other_without_families": [
+                "creeper"
+              ]
+            }
+          }
+        }
+      }
+    },
+
+    "components": {
+      "minecraft:identifier": {
+        "id": "minecraft:iron_golem"
+      },
+      "minecraft:type_family": {
+        "family": [ "monster" ]
+      },
+      "minecraft:nameable": {
+      },
+      "minecraft:collision_box": {
+        "width": 1,
+        "height": 4.0
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/iron_golem.json"
+      },
+      "minecraft:health": {
+        "value": 500,
+        "max": 500
+      },
+      "minecraft:movement": {
+        "value": 0.5
+      },
+      "minecraft:navigation.walk": {
+        "can_float": true,
+        "avoid_water": true
+      },
+      "minecraft:movement.basic": {
+        
+      },
+      "minecraft:jump.static": {
+      },
+      "minecraft:can_climb": {
+      },
+      "minecraft:attack": {
+        "interval": 20,
+        "range": 1.5,
+        "attack_interval_min": 10,
+        "attack_interval_max": 20,
+        "damage": {
+          "range_min": 7,
+          "range_max": 21
+        },
+        "effect_name": "blindness",
+        "amplifier": 100,
+        "effect_duration": 250
+			},
+      "minecraft:fall_damage": {
+        "value": 0.0
+      },
+      "minecraft:knockback_resistance": {
+        "value": 1.0
+      },
+      "minecraft:leashable": {
+        "soft_distance": 0.0,
+        "hard_distance": 0.0,
+        "max_distance": 0.0,
+        "on_leash": {
+          "event": "minecraft:on_leash",
+          "target": "self"
+        },
+        "on_unleash": {
+          "event": "minecraft:on_unleash",
+          "target": "self"
+        }
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 1,
+        "target_dist": 1.5,
+        "track_target": true,
+        "on_hit": {
+          "event": "minecraft:on_hit_flee",
+          "target": "self"
+        }
+      },
+      "minecraft:behavior.move_towards_target": {
+        "priority": 2,
+        "speed_multiplier": 0.9,
+        "within_radius": 32
+      },
+      "minecraft:behavior.move_through_village": {
+        "priority": 3,
+        "speed_multiplier": 0.6,
+        "only_at_night": true
+      },
+      "minecraft:behavior.move_towards_restriction": {
+        "priority": 4,
+        "speed_multiplier": 1
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 1,
+        "xz_dist": 32.0
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 6.0,
+        "probability": 0.02
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 3,
+        "entity_types": [
+          {
+            "filters": {
+              "other_with_families": "player",
+              "other_without_families": "creeper"
+            },
+            "within_default": 32
+          }
+        ],
+        "must_see": false,
+        "must_reach": true
+      },
+      "minecraft:timer": {
+        "time": 200,
+        "looping": false,
+        "on_complete": {
+          "event": "minecraft:return_to_attack",
+          "target": "self"
+        }
+      }
+    },
+
+    "events": {
+      "minecraft:from_player": {
+        "add": {
+          "component_groups": [
+            "minecraft:player_created"
+          ]
+        }
+      },
+      "minecraft:from_village": {
+        "add": {
+          "component_groups": [
+            "minecraft:village_created"
+          ]
+        }
+      },
+      "minecraft:on_leash": {
+        "add": {
+          "component_groups": [
+            "minecraft:golem_leashed"
+          ]
+        }
+      },
+      "minecraft:on_unleash": {
+        "remove": {
+          "component_groups": [
+            "minecraft:golem_leashed"
+          ]
+        }
+      },
+      "minecraft:on_hit_flee": {
+        "add": {
+          "component_groups": [
+            "flee_after_attack"
+          ]
+        },
+        "remove": {
+          "component_groups": [
+            "minecraft:player_created"
+          ]
+        }
+      },
+      "minecraft:return_to_attack": {
+        "add": {
+          "component_groups": [
+            "minecraft:player_created"
+          ]
+        },
+        "remove": {
+          "component_groups": [
+            "flee_after_attack"
+          ]
+        }
+      }
+    }
+  }
+}
